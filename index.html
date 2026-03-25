@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Pricing Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            color: #4a5568;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .expense-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            justify-content: center;
+            font-size: 1.05em;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+            padding: 8px 12px;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1em;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .total-quote {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+
+        .total-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .expense-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .expense-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .expense-list::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .expense-list::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        .expense-list::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        #expenses-container:empty::before {
+            content: 'No expenses added yet. Click "Add Expense" to get started.';
+            display: block;
+            padding: 20px;
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .expense-item {
+                grid-template-columns: 1fr;
+            }
+
+            .total-value {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Pricing Calculator</h1>
+        <p class="subtitle">Calculate project costs and generate professional quotes</p>
+
+        <div class="section">
+            <div class="section-title">Revenue (What You Charge)</div>
+            <div class="input-group">
+                <label for="hours">Estimated Hours</label>
+                <input type="number" id="hours" placeholder="e.g., 40" min="0" step="0.5">
+            </div>
+            <div class="input-group">
+                <label for="hourly-rate">Hourly Rate - Client Billing ($)</label>
+                <input type="number" id="hourly-rate" placeholder="e.g., 100" min="0" step="1">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Costs (What You Pay)</div>
+            <div class="input-group">
+                <label for="cost-rate">Employee/Contractor Hourly Cost ($)</label>
+                <input type="number" id="cost-rate" placeholder="e.g., 50" min="0" step="1">
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <label style="font-weight: 600; margin-bottom: 15px;">Non-Employee Costs</label>
+                <div class="expense-list" id="expenses-container"></div>
+                <button class="btn btn-secondary" onclick="addExpense()">+ Add Expense</button>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calculateQuote()">Calculate Quote</button>
+
+        <div class="results" id="results">
+            <div class="result-title">📋 Financial Summary</div>
+            <div class="result-item">
+                <span class="result-label">Revenue (What You Charge)</span>
+                <span class="result-value" id="revenue">$0.00</span>
+            </div>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="result-item">
+                    <span class="result-label">Labor Costs</span>
+                    <span class="result-value" id="labor-costs">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Non-Employee Costs</span>
+                    <span class="result-value" id="total-expenses">$0.00</span>
+                </div>
+                <div class="result-item" style="border-bottom: 2px solid rgba(255, 255, 255, 0.4); padding-bottom: 15px;">
+                    <span class="result-label" style="font-weight: 700;">Total Costs</span>
+                    <span class="result-value" id="total-costs">$0.00</span>
+                </div>
+            </div>
+            <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(255, 255, 255, 0.4);">
+                <span class="result-label" style="font-size: 1.2em;">Profit</span>
+                <span class="result-value" id="profit-amount" style="font-size: 1.3em;">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Profit Margin</span>
+                <span class="result-value" id="profit-margin">0%</span>
+            </div>
+            <div class="total-quote">
+                <div class="total-label">Client Quote</div>
+                <div class="total-value" id="final-quote">$0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let expenseCounter = 0;
+
+        function addExpense() {
+            const container = document.getElementById('expenses-container');
+            const expenseId = expenseCounter++;
+
+            const expenseDiv = document.createElement('div');
+            expenseDiv.className = 'expense-item';
+            expenseDiv.id = `expense-${expenseId}`;
+            expenseDiv.innerHTML = `
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" placeholder="e.g., Software licenses" class="expense-desc">
+                </div>
+                <div class="input-group">
+                    <label>Amount ($)</label>
+                    <input type="number" placeholder="0.00" min="0" step="0.01" class="expense-amount">
+                </div>
+                <button class="btn btn-danger" onclick="removeExpense(${expenseId})">✕</button>
+            `;
+
+            container.appendChild(expenseDiv);
+        }
+
+        function removeExpense(id) {
+            const expense = document.getElementById(`expense-${id}`);
+            if (expense) {
+                expense.remove();
+            }
+        }
+
+        function calculateQuote() {
+            const hours = parseFloat(document.getElementById('hours').value) || 0;
+            const hourlyRate = parseFloat(document.getElementById('hourly-rate').value) || 0;
+            const costRate = parseFloat(document.getElementById('cost-rate').value) || 0;
+
+            // Calculate Revenue (what you charge the client)
+            const revenue = hours * hourlyRate;
+
+            // Calculate Labor Costs (what you pay employees)
+            const laborCosts = hours * costRate;
+
+            // Calculate Non-Employee Costs (expenses)
+            const expenseAmounts = document.querySelectorAll('.expense-amount');
+            let nonEmployeeCosts = 0;
+            expenseAmounts.forEach(input => {
+                nonEmployeeCosts += parseFloat(input.value) || 0;
+            });
+
+            // Calculate Total Costs
+            const totalCosts = laborCosts + nonEmployeeCosts;
+
+            // Calculate Profit (Revenue - Costs)
+            const profit = revenue - totalCosts;
+
+            // Calculate Profit Margin %
+            const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
+
+            // Client Quote is the Revenue
+            const finalQuote = revenue;
+
+            // Update display
+            document.getElementById('revenue').textContent = `$${revenue.toFixed(2)}`;
+            document.getElementById('labor-costs').textContent = `$${laborCosts.toFixed(2)}`;
+            document.getElementById('total-expenses').textContent = `$${nonEmployeeCosts.toFixed(2)}`;
+            document.getElementById('total-costs').textContent = `$${totalCosts.toFixed(2)}`;
+            document.getElementById('profit-amount').textContent = `$${profit.toFixed(2)}`;
+            document.getElementById('profit-margin').textContent = `${profitMargin.toFixed(1)}%`;
+            document.getElementById('final-quote').textContent = `$${finalQuote.toFixed(2)}`;
+
+            document.getElementById('results').classList.add('show');
+
+            document.getElementById('results').scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            addExpense();
+        });
+    </script>
+</body>
+</html>
