@@ -2,15 +2,9 @@ name: Daily Meeting Brief
 
 # When does this run?
 on:
-  # Automatically: every weekday at 7am ET (11:00 UTC during EDT, 12:00 UTC during EST)
-  # Note: GitHub Actions cron uses UTC. Eastern Daylight Time = UTC-4, so 7am ET = 11am UTC.
-  # In winter (EST = UTC-5), change the hour to 12 to keep it at 7am ET.
   schedule:
-    - - cron: '0 23 * * 0-4'
-  # Weekdays only: Mon(1) through Fri(5)
+    - cron: '0 23 * * 0-4'
 
-  # Manually: you can trigger it anytime from the GitHub Actions tab
-  # Go to: Your repo → Actions → "Daily Meeting Brief" → "Run workflow"
   workflow_dispatch:
     inputs:
       save_local_copy:
@@ -22,37 +16,31 @@ on:
 jobs:
   send-daily-brief:
     name: Generate and Send Daily Brief
-    runs-on: ubuntu-latest  # Runs on a free GitHub virtual machine
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Download your code
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'  # Cache dependencies to speed up future runs
+          cache: 'pip'
 
-      # Step 3: Install Python libraries
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Step 4: Run the Daily Brief app
-      # The secrets below come from: GitHub repo → Settings → Secrets and variables → Actions
       - name: Generate and send Daily Brief
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           BRIEF_RECIPIENT_EMAIL: ${{ secrets.BRIEF_RECIPIENT_EMAIL }}
-          GRANOLA_NOTES_DIR: ''  # Granola is a local-only feature; not available in cloud
+          GRANOLA_NOTES_DIR: ''
           SAVE_LOCAL_COPY: ${{ inputs.save_local_copy || 'false' }}
         run: python -m daily_brief.main
 
-      # Step 5 (optional): If you ran with save_local_copy=true, download the HTML
       - name: Upload brief HTML (debug artifact)
         if: ${{ inputs.save_local_copy == true }}
         uses: actions/upload-artifact@v4
