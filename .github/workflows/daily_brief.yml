@@ -6,7 +6,8 @@ on:
   # Note: GitHub Actions cron uses UTC. Eastern Daylight Time = UTC-4, so 7am ET = 11am UTC.
   # In winter (EST = UTC-5), change the hour to 12 to keep it at 7am ET.
   schedule:
-    - cron: '0 11 * * 1-5'  # Weekdays only: Mon(1) through Fri(5)
+    - - cron: '0 23 * * 0-4'
+  # Weekdays only: Mon(1) through Fri(5)
 
   # Manually: you can trigger it anytime from the GitHub Actions tab
   # Go to: Your repo → Actions → "Daily Meeting Brief" → "Run workflow"
