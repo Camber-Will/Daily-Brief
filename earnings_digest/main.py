@@ -18,7 +18,7 @@ from googleapiclient.discovery import build
 
 from daily_brief.calendar_client import get_google_credentials
 from earnings_digest.tickers import EARNINGS_TICKERS
-from earnings_digest.earnings_fetcher import fetch_recent_earnings
+from earnings_digest.earnings_fetcher import fetch_recent_earnings, fetch_upcoming_earnings
 from earnings_digest.synthesizer import synthesize_earnings_report
 from earnings_digest.email_builder import build_earnings_html
 
@@ -93,9 +93,17 @@ def run():
         company_sections.append(section_html)
 
     print(f"\nFound {len(company_sections)} report(s) this week.")
-    print("\nBuilding and sending email...")
 
-    html = build_earnings_html(company_sections, tickers)
+    print("\nChecking upcoming earnings for next week...")
+    upcoming = fetch_upcoming_earnings(EARNINGS_TICKERS)
+    if upcoming:
+        names = ", ".join(f"{u['ticker']} ({u.get('expected_date_str', u.get('expected_date', ''))})" for u in upcoming)
+        print(f"  Reporting next week: {names}")
+    else:
+        print("  No portfolio companies confirmed for next week.")
+
+    print("\nBuilding and sending email...")
+    html = build_earnings_html(company_sections, tickers, upcoming)
     send_earnings_email(html, len(company_sections))
 
     print("\nDone!")
