@@ -1,0 +1,36 @@
+name: Weekly Earnings Digest
+
+on:
+  # Every Monday at 8:00 AM ET (EDT = UTC-4, so 12:00 UTC)
+  # April-November is always EDT, so 12:00 UTC is correct year-round for this use case.
+  schedule:
+    - cron: '0 12 * * 1'
+
+  # Manual trigger — useful for testing or catching up after a missed week
+  workflow_dispatch: {}
+
+jobs:
+  send-earnings-digest:
+    name: Fetch Earnings and Send Digest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send weekly earnings digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          EARNINGS_RECIPIENT_EMAIL: ${{ secrets.EARNINGS_RECIPIENT_EMAIL }}
+        run: python -m earnings_digest.main
