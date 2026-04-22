@@ -46,7 +46,7 @@ The quote should be about: getting better every day, the happiness that comes fr
 Respond with ONLY the quote text itself, no attribution, no quotation marks, no explanation. Just the 2-4 sentence quote."""
 
     response = _get_client().messages.create(
-        model="claude-opus-4-6",
+        model="claude-sonnet-4-6",
         max_tokens=200,
         messages=[{"role": "user", "content": prompt}],
     )

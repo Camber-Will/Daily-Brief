@@ -70,7 +70,7 @@ Return ONLY the JSON object, no other text."""
 
     try:
         response = _get_client().messages.create(
-            model="claude-opus-4-6",
+            model="claude-sonnet-4-6",
             max_tokens=1500,
             tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 3}],
             messages=[{"role": "user", "content": prompt}],
@@ -141,7 +141,7 @@ Return ONLY the JSON array, no other text."""
 
     try:
         response = _get_client().messages.create(
-            model="claude-opus-4-6",
+            model="claude-sonnet-4-6",
             max_tokens=1000,
             tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 3}],
             messages=[{"role": "user", "content": prompt}],
